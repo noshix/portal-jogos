@@ -1,9 +1,0 @@
-{
-  "name": "portal-jogos",
-  "private": true,
-  "version": "1.0.0",
-  "description": "Portal de jogos com o modulo Palavro e backend serverless para desafio diario.",
-  "scripts": {
-    "start": "powershell -ExecutionPolicy Bypass -File server.ps1"
-  }
-}

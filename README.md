@@ -9,7 +9,6 @@ Projeto base do site com varios jogos, organizado por modulo.
 - `jogos/palavro/`: modulo completo do Palavro
 - `jogos/forca/`: placeholder de outro jogo
 - `jogos/memoria/`: placeholder de outro jogo
-- `server.ps1`: servidor local do portal
 - `netlify.toml`: configuracao de deploy
 
 ## Modulo Palavro
@@ -20,11 +19,6 @@ Tudo do Palavro fica dentro de `jogos/palavro/`:
 - `src/`: frontend do jogo
 - `data/`: listas de palavras
 - `backend/netlify/functions/`: backend serverless do Palavro
-
-## Rodar localmente
-
-1. Execute `iniciar-servidor.bat`
-2. Abra `http://localhost:8080`
 
 ## Publicar gratis no Netlify
 
