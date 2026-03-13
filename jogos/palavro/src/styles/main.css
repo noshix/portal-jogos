@@ -267,6 +267,11 @@ button {
   background: var(--panel-soft);
 }
 
+.board-card.solved {
+  border-color: rgba(79, 138, 99, 0.7);
+  box-shadow: inset 0 0 0 1px rgba(79, 138, 99, 0.24);
+}
+
 .boards-1 .board-card {
   flex-basis: min(390px, 100%);
 }

@@ -429,7 +429,10 @@ window.PalavroGame = window.PalavroGame || {};
       for (let rowIndex = 0; rowIndex < modeState.maxAttempts; rowIndex += 1) {
         const row = board.rows[rowIndex];
         const isCurrentRow =
-          rowIndex === modeState.guessCount && !modeState.isComplete && !revealState;
+          rowIndex === modeState.guessCount &&
+          !modeState.isComplete &&
+          !revealState &&
+          !board.isSolved;
         const letters = row
           ? row.guess.split("")
           : isCurrentRow
@@ -473,10 +476,10 @@ window.PalavroGame = window.PalavroGame || {};
           : "";
 
       return `
-        <section class="board-card">
+        <section class="board-card ${board.isSolved ? "solved" : ""}">
           <div class="board-head">
             <strong>Palavra ${boardIndex + 1}</strong>
-            <span>${board.isSolved ? `Acertou em ${board.solvedAt}` : "Em aberto"}</span>
+            <span>${board.isSolved ? `Travada em ${board.solvedAt}` : "Em aberto"}</span>
           </div>
           <div class="board-grid">
             ${rows.join("")}

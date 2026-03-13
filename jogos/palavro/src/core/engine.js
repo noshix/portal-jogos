@@ -34,18 +34,30 @@ window.PalavroGame = window.PalavroGame || {};
 
   function buildModeResult({ targets, guesses, maxAttempts }) {
     const boards = targets.map((target) => {
-      const rows = guesses.map((guess) => ({
-        guess,
-        status: evaluateGuess(guess, target),
-        isExactMatch: guess === target,
-      }));
-      const solvedAt = rows.findIndex((row) => row.isExactMatch);
+      let solvedAt = null;
+      const rows = guesses.map((guess, guessIndex) => {
+        if (solvedAt !== null) {
+          return null;
+        }
+
+        const row = {
+          guess,
+          status: evaluateGuess(guess, target),
+          isExactMatch: guess === target,
+        };
+
+        if (row.isExactMatch) {
+          solvedAt = guessIndex + 1;
+        }
+
+        return row;
+      });
 
       return {
         target,
         rows,
-        solvedAt: solvedAt >= 0 ? solvedAt + 1 : null,
-        isSolved: solvedAt >= 0,
+        solvedAt,
+        isSolved: solvedAt !== null,
       };
     });
 
@@ -53,6 +65,10 @@ window.PalavroGame = window.PalavroGame || {};
 
     boards.forEach((board) => {
       board.rows.forEach((row) => {
+        if (!row) {
+          return;
+        }
+
         row.guess.split("").forEach((letter, index) => {
           const nextStatus = row.status[index];
           const currentStatus = keyboard[letter];
