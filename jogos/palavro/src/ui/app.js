@@ -2,7 +2,7 @@ window.PalavroGame = window.PalavroGame || {};
 
 (function registerUiModule() {
   const { KEYBOARD_ROWS, MODES, MODE_ORDER, WORD_LENGTH } = window.PalavroGame.constants;
-  const { formatCountdown, fetchDailyChallenge, validateWord } = window.PalavroGame.daily;
+  const { formatCountdown, fetchDailyChallenge, fetchAnswerDisplayMap, validateWord } = window.PalavroGame.daily;
   const { buildModeResult } = window.PalavroGame.engine;
   const { loadAppState, markModeResolved, saveAppState } = window.PalavroGame.storage;
   const { normalizeWord } = window.PalavroGame.utils;
@@ -17,6 +17,8 @@ window.PalavroGame = window.PalavroGame || {};
 
     let currentDayKey = null;
     let challenge = { termo: [], dueto: [], quarteto: [] };
+    let challengeDisplay = { termo: [], dueto: [], quarteto: [] };
+    let answerDisplayMap = {};
     let appState = null;
     let currentGuessLetters = Array.from({ length: WORD_LENGTH }, () => "");
     let cursorIndex = 0;
@@ -41,6 +43,10 @@ window.PalavroGame = window.PalavroGame || {};
 
     function getCurrentGuess() {
       return currentGuessLetters.join("");
+    }
+
+    function getDisplayWord(word) {
+      return answerDisplayMap[word] || word;
     }
 
     function getOfficialNowMs() {
@@ -118,6 +124,14 @@ window.PalavroGame = window.PalavroGame || {};
 
       try {
         const payload = await fetchDailyChallenge();
+        if (!Object.keys(answerDisplayMap).length) {
+          try {
+            answerDisplayMap = await fetchAnswerDisplayMap();
+          } catch (mapError) {
+            console.warn("Falha ao carregar o mapa acentuado das respostas:", mapError);
+            answerDisplayMap = {};
+          }
+        }
 
         clockOffsetMs = payload.serverNowEpochMs - Date.now();
         nextChangeEpochMs = payload.nextChangeEpochMs;
@@ -126,6 +140,11 @@ window.PalavroGame = window.PalavroGame || {};
           termo: payload.termo,
           dueto: payload.dueto,
           quarteto: payload.quarteto,
+        };
+        challengeDisplay = {
+          termo: payload.termo.map((word) => getDisplayWord(word)),
+          dueto: payload.dueto.map((word) => getDisplayWord(word)),
+          quarteto: payload.quarteto.map((word) => getDisplayWord(word)),
         };
 
         if (!appState || previousDayKey !== currentDayKey) {
@@ -206,7 +225,7 @@ window.PalavroGame = window.PalavroGame || {};
       resultModal = {
         modeKey,
         isWin: modeState.isWin,
-        answers: challenge[modeKey],
+        answers: challengeDisplay[modeKey],
         attemptsUsed,
         bestSolvedAttempt,
         title: modeState.isWin
@@ -373,7 +392,7 @@ window.PalavroGame = window.PalavroGame || {};
           if (nextState.isWin) {
             setToast(`Boa! Voce concluiu ${MODES[modeKey].label}.`);
           } else {
-            setToast(`Fim de jogo. Respostas: ${challenge[modeKey].join(", ")}.`);
+            setToast(`Fim de jogo. Respostas: ${challengeDisplay[modeKey].join(", ")}.`);
           }
 
           openResultModal(modeKey, nextState);
@@ -470,10 +489,10 @@ window.PalavroGame = window.PalavroGame || {};
         `);
       }
 
-      const answerFooter =
-        modeState.isComplete && !board.isSolved
-          ? `<div class="board-answer">Resposta: <strong>${board.target}</strong></div>`
-          : "";
+      const shouldRevealAnswer = board.isSolved || modeState.isComplete;
+      const answerFooter = shouldRevealAnswer
+        ? `<div class="board-answer">Resposta: <strong>${getDisplayWord(board.target)}</strong></div>`
+        : "";
 
       return `
         <section class="board-card ${board.isSolved ? "solved" : ""}">

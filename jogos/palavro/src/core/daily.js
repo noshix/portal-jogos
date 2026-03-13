@@ -31,6 +31,10 @@ window.PalavroGame = window.PalavroGame || {};
       return fetchJson("/api/daily-challenge");
     },
 
+    fetchAnswerDisplayMap() {
+      return fetchJson("./data/answer-display.json");
+    },
+
     validateWord(guess) {
       const query = new URLSearchParams({ guess }).toString();
       return fetchJson(`/api/validate-word?${query}`);
