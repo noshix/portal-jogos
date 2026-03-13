@@ -2,6 +2,9 @@
   publish = "."
   functions = "jogos/termo/backend/netlify/functions"
 
+[functions]
+  included_files = ["jogos/termo/data/**"]
+
 [[redirects]]
   from = "/api/*"
   to = "/.netlify/functions/:splat"

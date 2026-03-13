@@ -8,8 +8,25 @@ const DAY_MS = 24 * 60 * 60 * 1000;
 
 let cache = null;
 
+function resolveDataFilePath(filename) {
+  const candidates = [
+    path.resolve(__dirname, "..", "..", "..", "..", "data", filename),
+    path.resolve(__dirname, "..", "..", "..", "data", filename),
+    path.resolve(process.cwd(), "jogos", "termo", "data", filename),
+    path.resolve(process.cwd(), "data", filename),
+  ];
+
+  const match = candidates.find((filePath) => fs.existsSync(filePath));
+
+  if (!match) {
+    throw new Error(`Arquivo de dados nao encontrado para ${filename}. Caminhos tentados: ${candidates.join(", ")}`);
+  }
+
+  return match;
+}
+
 function readJsonFile(filename) {
-  const filePath = path.resolve(__dirname, "..", "..", "..", "..", "data", filename);
+  const filePath = resolveDataFilePath(filename);
   return JSON.parse(fs.readFileSync(filePath, "utf8"));
 }
 
