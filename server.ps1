@@ -5,8 +5,8 @@ param(
 $ErrorActionPreference = "Stop"
 
 $projectRoot = Split-Path -Parent $MyInvocation.MyCommand.Path
-$termoRoot = Join-Path $projectRoot "jogos\\termo"
-$dataRoot = Join-Path $termoRoot "data"
+$palavroRoot = Join-Path $projectRoot "jogos\\palavro"
+$dataRoot = Join-Path $palavroRoot "data"
 
 function Normalize-Word {
   param([string]$Value)
@@ -285,6 +285,20 @@ function Handle-Request {
       guess = $guess
       valid = ($guess.Length -eq 5 -and $script:acceptedSet.Contains($guess))
     }
+    return
+  }
+
+  if ($path -eq "/jogos/termo" -or $path -eq "/jogos/termo/") {
+    $writer = New-Object System.IO.StreamWriter($Stream, [Text.Encoding]::ASCII, 1024, $true)
+    $writer.NewLine = "`r`n"
+    $writer.WriteLine("HTTP/1.1 301 Moved Permanently")
+    $writer.WriteLine("Location: /jogos/palavro/")
+    $writer.WriteLine("Content-Type: text/plain; charset=utf-8")
+    $writer.WriteLine("Content-Length: 0")
+    $writer.WriteLine("Connection: close")
+    $writer.WriteLine("Cache-Control: no-store")
+    $writer.WriteLine("")
+    $writer.Flush()
     return
   }
 

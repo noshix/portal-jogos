@@ -1,9 +1,19 @@
 [build]
   publish = "."
-  functions = "jogos/termo/backend/netlify/functions"
+  functions = "jogos/palavro/backend/netlify/functions"
 
 [functions]
-  included_files = ["jogos/termo/data/**"]
+  included_files = ["jogos/palavro/data/**"]
+
+[[redirects]]
+  from = "/jogos/termo"
+  to = "/jogos/palavro/"
+  status = 301
+
+[[redirects]]
+  from = "/jogos/termo/*"
+  to = "/jogos/palavro/:splat"
+  status = 301
 
 [[redirects]]
   from = "/api/*"
