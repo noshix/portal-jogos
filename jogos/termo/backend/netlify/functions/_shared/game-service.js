@@ -27,7 +27,8 @@ function resolveDataFilePath(filename) {
 
 function readJsonFile(filename) {
   const filePath = resolveDataFilePath(filename);
-  return JSON.parse(fs.readFileSync(filePath, "utf8"));
+  const raw = fs.readFileSync(filePath, "utf8").replace(/^\uFEFF/, "");
+  return JSON.parse(raw);
 }
 
 function loadData() {
