@@ -49,6 +49,16 @@ window.PalavroGame = window.PalavroGame || {};
       return answerDisplayMap[word] || word;
     }
 
+    function getDisplayLetters(letters) {
+      const guess = letters.join("");
+
+      if (letters.includes("") || guess.length !== WORD_LENGTH) {
+        return letters.map((letter) => letter || " ");
+      }
+
+      return getDisplayWord(normalizeWord(guess)).split("");
+    }
+
     function getOfficialNowMs() {
       return Date.now() + clockOffsetMs;
     }
@@ -453,9 +463,9 @@ window.PalavroGame = window.PalavroGame || {};
           !revealState &&
           !board.isSolved;
         const letters = row
-          ? row.guess.split("")
+          ? getDisplayWord(row.guess).split("")
           : isCurrentRow
-            ? currentGuessLetters.map((letter) => letter || " ")
+            ? getDisplayLetters(currentGuessLetters)
             : Array.from({ length: WORD_LENGTH }, () => " ");
         const statuses = row
           ? row.status
